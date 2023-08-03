@@ -1,0 +1,16 @@
+C:\Users\FullStack\source\repos\gamecard\gamecard\bin\Debug\netcoreapp3.0\gamecard.exe
+C:\Users\FullStack\source\repos\gamecard\gamecard\obj\Debug\netcoreapp3.0\gamecard.csprojAssemblyReference.cache
+C:\Users\FullStack\source\repos\gamecard\gamecard\obj\Debug\netcoreapp3.0\gamecard.AssemblyInfoInputs.cache
+C:\Users\FullStack\source\repos\gamecard\gamecard\obj\Debug\netcoreapp3.0\gamecard.AssemblyInfo.cs
+C:\Users\FullStack\source\repos\gamecard\gamecard\bin\Debug\netcoreapp3.0\gamecard.deps.json
+C:\Users\FullStack\source\repos\gamecard\gamecard\bin\Debug\netcoreapp3.0\gamecard.runtimeconfig.json
+C:\Users\FullStack\source\repos\gamecard\gamecard\bin\Debug\netcoreapp3.0\gamecard.runtimeconfig.dev.json
+C:\Users\FullStack\source\repos\gamecard\gamecard\bin\Debug\netcoreapp3.0\gamecard.dll
+C:\Users\FullStack\source\repos\gamecard\gamecard\bin\Debug\netcoreapp3.0\gamecard.pdb
+C:\Users\FullStack\source\repos\gamecard\gamecard\bin\Debug\netcoreapp3.0\Microsoft.Extensions.Configuration.dll
+C:\Users\FullStack\source\repos\gamecard\gamecard\bin\Debug\netcoreapp3.0\Microsoft.Extensions.Configuration.Abstractions.dll
+C:\Users\FullStack\source\repos\gamecard\gamecard\bin\Debug\netcoreapp3.0\Microsoft.Extensions.Primitives.dll
+C:\Users\FullStack\source\repos\gamecard\gamecard\bin\Debug\netcoreapp3.0\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\FullStack\source\repos\gamecard\gamecard\obj\Debug\netcoreapp3.0\gamecard.csproj.CopyComplete
+C:\Users\FullStack\source\repos\gamecard\gamecard\obj\Debug\netcoreapp3.0\gamecard.dll
+C:\Users\FullStack\source\repos\gamecard\gamecard\obj\Debug\netcoreapp3.0\gamecard.pdb

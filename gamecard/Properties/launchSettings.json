@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "gamecard": {
+      "commandName": "Project",
+      "commandLineArgs": "--in abc.txt --out xyz.txt"
+    }
+  }
+}
