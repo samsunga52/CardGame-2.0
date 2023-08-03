@@ -231,7 +231,19 @@ namespace CardGame
                     string playerName = parts[0];
                     string[] cardValues = parts[1].Trim().Split(',');
 
+                    for (int i = 0; i < cardValues.Length; i++)
+                    {
+                        cardValues[i] = cardValues[i].Replace(" ", "");
+                    }
+
                     lst = cardValues.OfType<string>().ToList();
+
+
+
+                    foreach (var item in lst)
+                    {
+                        item.Replace(" ", "");
+                    }
 
                     cardValuesStatement.Add(new PlayerCards()
                     {
@@ -255,13 +267,31 @@ namespace CardGame
                 }
 
                 var duplicate = players.GroupBy(x => new { x.Score }).Where(x => x.Skip(1).Any()).Select(x => x.Key).ToList();
-                tieScore = duplicate.ToList().Max(x => x.Score);
+
+                if(duplicate.Count() != 0)
+                {
+                    tieScore = duplicate.ToList().Max(x => x.Score);
+                    var orderedTeams = players.OrderBy(t => t.Score).ToList();
+                    tiedTeams = orderedTeams.Where(t => t.Score == tieScore).ToList();
+                }
+                
                 CardShapesViewModel csvm = new CardShapesViewModel();
-                //csvm.CardShapes.CardShape = new List<string[]>();
                 csvm.CardShapes = new List<AlphanumericCheck.CardShapes>();
-                var orderedTeams = players.OrderBy(t => t.Score).ToList();
-                tiedTeams = orderedTeams.Where(t => t.Score == tieScore).ToList();
-                if (tiedTeams.Count() > 1)
+               
+                List<Player> winners = new List<Player>();
+                int highestScore = 0;
+
+                highestScore = players.Max(x => x.Score);
+
+                foreach (Player player in players)
+                {
+                    if (player.Score == highestScore)
+                    {
+                        winners.Add(player);
+                    }
+                }
+                string gametype = "";
+                if (tiedTeams != null)
                 {
                     try
                     {
@@ -291,199 +321,225 @@ namespace CardGame
                         // Handle the exception
                         Console.WriteLine("An error occurred: " + ex.Message);
                     }
-                }
 
+                    AlphanumericCheck.CardViewModel duplicatealpha = new AlphanumericCheck.CardViewModel();
+                    AlphanumericCheck.CardModeler nc = new AlphanumericCheck.CardModeler();
+                    duplicatealpha = AlphanumericCheck.CardHelper.dupcard(csvm);
+                    nc.MyProperty = new List<AlphanumericCheck.CardViewModel>();
+                    nc.MyProperty.Add(duplicatealpha);
+                    bool tie = false;
+                    List<string> newcards = new List<string>();
+                    string newcard;
+                    bool containsThree = false;
 
-                int highestScore = 0;
-
-                highestScore = players.Max(x => x.Score);
-                AlphanumericCheck.CardViewModel duplicatealpha = new AlphanumericCheck.CardViewModel();
-                AlphanumericCheck.CardModeler nc = new AlphanumericCheck.CardModeler();
-                duplicatealpha = AlphanumericCheck.CardHelper.dupcard(csvm);
-                nc.MyProperty = new List<AlphanumericCheck.CardViewModel>();
-                nc.MyProperty.Add(duplicatealpha);
-                bool tie = false;
-                string gametype = "";
-                List<string> newcards = new List<string>();
-                string newcard;
-                bool containsThree = false;
-                List<Player> winners = new List<Player>();
-                if (nc.MyProperty != null)
-                {
-                    foreach (var item in nc.MyProperty)
+                    if (nc.MyProperty != null)
                     {
-                        if (item.Cardshapes.Count() > 1)
+                        foreach (var item in nc.MyProperty)
                         {
-                            foreach (var x in item.Cardshapes)
+                            if (item.Cardshapes.Count() > 1)
                             {
-                                foreach (var s in x.Suit)
+                                foreach (var x in item.Cardshapes)
                                 {
-                                    newcard = s;
-                                    newcards.Add(newcard);
+                                    foreach (var s in x.Suit)
+                                    {
+                                        newcard = s;
+                                        newcards.Add(newcard);
+                                    }
                                 }
-                            }
-                            Dictionary<string, int> wordCount = new Dictionary<string, int>();
-                            PlayerCards pc = new PlayerCards();
-                            pc.CardValue = new List<string>();
+                                Dictionary<string, int> wordCount = new Dictionary<string, int>();
+                                PlayerCards pc = new PlayerCards();
+                                pc.CardValue = new List<string>();
 
-                            bool checkif2 = false;
-                            foreach (var x in newcards)
-                            {
-                                pc.CardValue.Add(x);
-                            }
-
-                            foreach (string word in pc.CardValue)
-                            {
-                                if (wordCount.ContainsKey(word))
+                                bool checkif2 = false;
+                                foreach (var x in newcards)
                                 {
-                                    wordCount[word]++;
+                                    pc.CardValue.Add(x);
+                                }
+
+                                foreach (string word in pc.CardValue)
+                                {
+                                    if (wordCount.ContainsKey(word))
+                                    {
+                                        wordCount[word]++;
+                                    }
+                                    else
+                                    {
+                                        wordCount[word] = 1;
+                                    }
+                                }
+                                var sumOfDuplicates = wordCount.Select(x => x.Value).ToList();
+                                int itemToCheck = 2, itemToCheckForThree = 3;
+                                //if specified once then tie
+                                tie = sumOfDuplicates.Count(x => x == itemToCheck) > 1;
+                                containsThree = sumOfDuplicates.Count(x => x == itemToCheckForThree) == 3;
+                                checkif2 = sumOfDuplicates.Contains(2);
+
+                                foreach (Player player in players)
+                                {
+                                    if (player.Score == highestScore)
+                                    {
+                                        winners.Add(player);
+                                    }
+                                }
+
+                                if (containsThree)
+                                {
+                                    using (StreamWriter writer = new StreamWriter(outputFile))
+                                    {
+                                        writer.WriteLine("Extra card suit found, please remove");
+                                    }
+                                    return;
+                                }
+
+                                if (tie == false && tiedTeams.Count() == 2 && tieScore == highestScore)
+                                {
+                                    gametype = "tie";
+                                }
+                                else if (tie == false && checkif2 == true)
+                                {
+                                    gametype = "highestscore";
                                 }
                                 else
                                 {
-                                    wordCount[word] = 1;
+                                    gametype = "score";
                                 }
-                            }
-                            var sumOfDuplicates = wordCount.Select(x => x.Value).ToList();
-                            int itemToCheck = 2, itemToCheckForThree = 3;
-                            //if specified once then tie
-                            tie = sumOfDuplicates.Count(x => x == itemToCheck) > 1;
-                            containsThree = sumOfDuplicates.Count(x => x == itemToCheckForThree) == 3;
-                            checkif2 = sumOfDuplicates.Contains(2);
 
-                            foreach (Player player in players)
+                            }
+                        }
+                    }
+
+                    // Create a list to store the winners
+
+                    AlphanumericCheck.Card card = new AlphanumericCheck.Card();
+                    List<string> playerNames = new List<string>();
+
+                    List<KeyValuePair<string, string>> suitScores = new List<KeyValuePair<string, string>>();
+                    List<KeyValuePair<string, string>> u = new List<KeyValuePair<string, string>>();
+
+                    if (gametype == "score")
+                    {
+                        List<PlayerScores> p = new List<PlayerScores>();
+                        using (StreamWriter writer = new StreamWriter(outputFile))
+                        {
+                            foreach (Player winner in winners.Distinct())
                             {
-                                if (player.Score == highestScore)
+                                var player = new Player(winner.Name, winner.Score, new string[0]);
+                                p.Add(new PlayerScores()
                                 {
-                                    winners.Add(player);
-                                }
+                                    Name = player.Name,
+                                    Score = player.Score
+                                });
+                            }
+                            PlayerScores[] names = p.ToArray();
+                            string[] name = names.Select(c => c.Name.ToString()).ToArray();
+                            string commaSeparatedString = string.Join(",", name);
+
+                            string score = p.Max(x => x.Score).ToString();
+                            writer.WriteLine(commaSeparatedString + ":" + score);
+                        }
+                    }
+                    if (gametype == "tie")
+                    {
+                        foreach (string line in lines)
+                        {
+                            string[] parts = line.Split(':');
+                            string playerName = parts[0];
+                            playerNames.Add(playerName);
+                            string[] cardValues = parts[1].Trim().Split(',');
+
+                            for (int i = 0; i < cardValues.Length; i++)
+                            {
+                                cardValues[i] = cardValues[i].Replace(" ", "");
                             }
 
-                            if (containsThree)
+
+                            foreach (var tied in tiedTeams)
                             {
-                                using (StreamWriter writer = new StreamWriter(outputFile))
+                                foreach (string k in lines.Where(x => x.Contains(tied.Name)))
                                 {
-                                    writer.WriteLine("Extra card suit found, please remove");
+                                    if (k.Contains(tied.Name))
+                                    {
+                                        string[] parts2 = k.Split(':');
+                                        string playerName2 = parts2[0];
+                                        playerNames.Add(playerName);
+                                        string[] cardValues2 = parts2[1].Split(',');
+
+                                        for (int i = 0; i < cardValues2.Length; i++)
+                                        {
+                                            cardValues2[i] = cardValues2[i].Replace(" ", "");
+                                        }
+
+
+                                        u = AlphanumericCheck.CardHelper.FindHighestCard(tied.Name, cardValues2);
+
+                                        suitScores.Add(new KeyValuePair<string, string>(u.Max(y => y.Key), u.Max(z => z.Value)));
+
+                                    }
                                 }
-                                return;
                             }
+                        }
+                        foreach (var item in u)
+                        {
+                            suitScores.Add(new KeyValuePair<string, string>(item.Key, item.Value));
+                        }
 
-                            if (tie == false && tiedTeams.Count() == 2 && tieScore == highestScore)
-                            {
-                                gametype = "tie";
-                            }
-                            else if (tie == false && checkif2 == true)
-                            {
-                                gametype = "highestscore";
-                            }
-                            else
-                            {
-                                gametype = "score";
-                            }
+                        var v = AlphanumericCheck.CardHelper.FindMax(suitScores);
+                        card = (from i in v.Cards
+                                let maxId = v.Cards.Max(m => m.Value)
+                                where i.Value == maxId
+                                select i).FirstOrDefault();
 
+                        var baseValue = AlphanumericCheck.CardHelper.GetBaseCardValue(card.Suit);
+
+                        using (StreamWriter writer = new StreamWriter(outputFile))
+                        {
+                            foreach (Player winner in winners.Distinct())
+                            {
+                                if (winner.Name == card.Name)
+                                {
+                                    writer.WriteLine(winner.Name + ":" + (winner.Score + baseValue));
+                                }
+                            }
+                        }
+                    }
+                    if (gametype == "highestscore")
+                    {
+
+
+                        foreach (Player player in players)
+                        {
+                            if (player.Score == highestScore)
+                            {
+                                winners.Add(player);
+                            }
+                        }
+
+                        using (StreamWriter writer = new StreamWriter(outputFile))
+                        {
+                            foreach (Player winner in winners.Distinct())
+                            {
+                                writer.WriteLine(winner.Name + ":" + winner.Score);
+                            }
                         }
                     }
                 }
-
-                // Create a list to store the winners
-
-                AlphanumericCheck.Card card = new AlphanumericCheck.Card();
-                List<string> playerNames = new List<string>();
-
-                List<KeyValuePair<string, string>> suitScores = new List<KeyValuePair<string, string>>();
-                List<KeyValuePair<string, string>> u = new List<KeyValuePair<string, string>>();
-                List<Player> playerstiedTeams = new List<Player>();
-
-
-
-                foreach (Player player in players)
+                else
                 {
-                    if (player.Score == highestScore)
+  
+
+                    foreach (Player player in players)
                     {
-                        winners.Add(player);
+                        if (player.Score == highestScore)
+                        {
+                            winners.Add(player);
+                        }
                     }
-                }
 
-                if (gametype == "highestscore")
-                {
                     using (StreamWriter writer = new StreamWriter(outputFile))
                     {
                         foreach (Player winner in winners.Distinct())
                         {
                             writer.WriteLine(winner.Name + ":" + winner.Score);
-                        }
-                    }
-                }
-                if (gametype == "score")
-                {
-                    List<PlayerScores> p = new List<PlayerScores>();
-                    using (StreamWriter writer = new StreamWriter(outputFile))
-                    {
-                        foreach (Player winner in winners.Distinct())
-                        {
-                            var player = new Player(winner.Name, winner.Score, new string[0]);
-                            p.Add(new PlayerScores()
-                            {
-                                Name = player.Name,
-                                Score = player.Score
-                            });
-                        }
-                        PlayerScores[] names = p.ToArray();
-                        string[] name = names.Select(c => c.Name.ToString()).ToArray();
-                        string commaSeparatedString = string.Join(",", name);
-
-                        string score = p.Max(x => x.Score).ToString();
-                        writer.WriteLine(commaSeparatedString + ":" + score);
-                    }
-                }
-                if (gametype == "tie")
-                {
-                    foreach (string line in lines)
-                    {
-                        string[] parts = line.Split(':');
-                        string playerName = parts[0];
-                        playerNames.Add(playerName);
-                        string[] cardValues = parts[1].Trim().Split(',');
-
-                        foreach (var tied in tiedTeams)
-                        {
-                            foreach (string k in lines.Where(x => x.Contains(tied.Name)))
-                            {
-                                if (k.Contains(tied.Name))
-                                {
-                                    string[] parts2 = k.Split(':');
-                                    string playerName2 = parts2[0];
-                                    playerNames.Add(playerName);
-                                    string[] cardValues2 = parts2[1].Split(',');
-
-                                    u = AlphanumericCheck.CardHelper.FindHighestCard(tied.Name, cardValues2);
-
-                                    suitScores.Add(new KeyValuePair<string, string>(u.Max(y => y.Key), u.Max(z => z.Value)));
-
-                                }
-                            }
-                        }
-                    }
-                    foreach (var item in u)
-                    {
-                        suitScores.Add(new KeyValuePair<string, string>(item.Key, item.Value));
-                    }
-
-                    var v = AlphanumericCheck.CardHelper.FindMax(suitScores);
-                    card = (from i in v.Cards
-                            let maxId = v.Cards.Max(m => m.Value)
-                            where i.Value == maxId
-                            select i).FirstOrDefault();
-
-                    var baseValue = AlphanumericCheck.CardHelper.GetBaseCardValue(card.Suit);
-
-                    using (StreamWriter writer = new StreamWriter(outputFile))
-                    {
-                        foreach (Player winner in winners.Distinct())
-                        {
-                            if (winner.Name == card.Name)
-                            {
-                                writer.WriteLine(winner.Name + ":" + (winner.Score + baseValue));
-                            }
                         }
                     }
                 }
@@ -710,6 +766,7 @@ namespace CardGame
                     {
                         // Remove any spaces and convert to uppercase
                         string trimmedCard = c.Trim().ToUpper();
+                        trimmedCard = trimmedCard.Replace(" ", "");
 
                         // Add the card to the player's hand
                         playerCards.Add(trimmedCard);
