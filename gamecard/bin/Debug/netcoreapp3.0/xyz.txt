@@ -1,1 +1,9 @@
-Player4:50
+Exception:<Player2 has in-correct player cards>
+
+Exception:<Player1 has in-correct player cards>
+
+Exception:<Player2 has in-correct player cards>
+
+Exception:<Player1 has in-correct player cards>
+
+Exception:<Player2 has in-correct player cards>

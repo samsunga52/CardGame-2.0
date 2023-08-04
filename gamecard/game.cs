@@ -11,10 +11,10 @@ namespace CardGame
     {
         static void Main(string[] args)
         {
-            // Check if the correct number of arguments is provided
+            // Check if the correct number of arguments is provided 
             if (args.Length != 4)
             {
-                Console.WriteLine("Incorrect number of parameters supplied");
+                Console.WriteLine("Exception:<Incorrect number of parameters supplied>");
                 return;
             }
 
@@ -60,12 +60,12 @@ namespace CardGame
 
             if (!inputFile.Contains(".txt"))
             {
-                Console.WriteLine("Only .txt files are required for input");
+                Console.WriteLine("Exception:<Only .txt files are required for input>");
                 return;
             }
             if (!outputFile.Contains(".txt"))
             {
-                Console.WriteLine("Only .txt files are required for output");
+                Console.WriteLine("Exception:<Only .txt files are required for output>");
                 return;
             }
 
@@ -83,7 +83,7 @@ namespace CardGame
                 {
                     using (StreamWriter writer = new StreamWriter(outputFile))
                     {
-                        writer.WriteLine("Error: The text file is empty.");
+                        writer.WriteLine("Exception:<The text file is empty.>");
                     }
                     return;
                 }
@@ -131,7 +131,7 @@ namespace CardGame
                                 {
                                     using (StreamWriter writer = new StreamWriter(outputFile))
                                     {
-                                        writer.WriteLine("Error: Please remove comma from end of players cards");
+                                        writer.WriteLine("Exception:<Please remove comma from end of players cards>");
                                     }
                                     return;
                                 }
@@ -139,7 +139,7 @@ namespace CardGame
                                 {
                                     using (StreamWriter writer = new StreamWriter(outputFile))
                                     {
-                                        writer.WriteLine("Error: 5 cards is required to play");
+                                        writer.WriteLine("Exception:<5 cards is required to play>");
                                     }
                                     return;
                                 }
@@ -154,7 +154,7 @@ namespace CardGame
                         {
                             using (StreamWriter writer = new StreamWriter(outputFile))
                             {
-                                writer.WriteLine("Error: Please enter player name seperated by a colon");
+                                writer.WriteLine("Exception:<Please enter player name seperated by a colon>");
                             }
                             return;
                         }
@@ -164,7 +164,7 @@ namespace CardGame
                         {
                             using (StreamWriter writer = new StreamWriter(outputFile))
                             {
-                                writer.WriteLine("Error: A comma seperated card array is required to play");
+                                writer.WriteLine("Exception:<A comma seperated card array is required to play>");
                             }
                             return;
                         }
@@ -185,7 +185,7 @@ namespace CardGame
                 {
                     using (StreamWriter writer = new StreamWriter(outputFile))
                     {
-                        writer.WriteLine("Error: 7 players required to play.");
+                        writer.WriteLine("Exception:<7 players required to play.>");
                     }
                     return;
                 }
@@ -196,23 +196,21 @@ namespace CardGame
                     {
                         using (StreamWriter writer = new StreamWriter(outputFile))
                         {
-                            writer.WriteLine("Duplicate card suit found, please remove");
+                            writer.WriteLine("Exception:<Duplicate card suit found, please remove>");
                         }
                         return;
                     }
                     else if (x.Count() >= 1)
                     {
-
                         foreach (var item in x)
                         {
                             using (StreamWriter writer = new StreamWriter(outputFile))
                             {
-                                writer.WriteLine(String.Join("\n", item + " " + "has in-correct player cards"));
+                                writer.WriteLine("Exception:<"+item+ " " + "has in-correct player cards>");
                             }
-                        }
-                        return;
+                        }                       
                     }
-
+                    return;
                 }
 
 
@@ -316,10 +314,10 @@ namespace CardGame
                             }
                         }
                     }
-                    catch (IndexOutOfRangeException ex)
+                    catch (Exception ex)
                     {
                         // Handle the exception
-                        Console.WriteLine("An error occurred: " + ex.Message);
+                        Console.WriteLine("Exception:<An error occurred: " + ex.Message+">");
                     }
 
                     AlphanumericCheck.CardViewModel duplicatealpha = new AlphanumericCheck.CardViewModel();
@@ -386,7 +384,7 @@ namespace CardGame
                                 {
                                     using (StreamWriter writer = new StreamWriter(outputFile))
                                     {
-                                        writer.WriteLine("Extra card suit found, please remove");
+                                        writer.WriteLine("Exception:<Extra card suit found, please remove.>");
                                     }
                                     return;
                                 }
@@ -548,7 +546,7 @@ namespace CardGame
             }
             catch (Exception ex)
             {
-                Console.WriteLine("An error occurred: " + ex.Message);
+                Console.WriteLine("Exception:<An error occurred: " + ex.Message+">");
             }
         }
 

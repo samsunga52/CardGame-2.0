@@ -2,7 +2,7 @@
   "profiles": {
     "gamecard": {
       "commandName": "Project",
-      "commandLineArgs": "--in abc.txt --out xyz.txt"
+      "commandLineArgs": "--in abc.txt --out C:\\Users\\FullStack\\Desktop\\xyz.txt"
     }
   }
 }
